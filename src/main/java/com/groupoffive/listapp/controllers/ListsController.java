@@ -5,8 +5,7 @@ import com.groupoffive.listapp.models.*;
 import com.groupoffive.listapp.util.NotificationService;
 
 import javax.persistence.EntityManager;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ListsController {
 
@@ -36,7 +35,7 @@ public class ListsController {
      * Retorna os produtos pertencentes a uma lista.
      * @param listId id da lista a ser buscada
      * @return devolve os produtos da lista
-     * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
+     * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
     public Set<Produto> getListProducts(int listId) throws ListNotFoundException {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
@@ -47,21 +46,31 @@ public class ListsController {
     }
 
     /**
-     *
+     * Retorna todos os comentarios de uma lista.
+     * @param lista lista a ser buscada
+     * @return comentarios da lista
+     * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
-    public Set<ComentarioLista> getComments(int listId) throws ListNotFoundException {
-        ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
+    private List<Object> getComments(ListaDeCompras lista) throws ListNotFoundException {
 
         if(null == lista) throw new ListNotFoundException();
 
-        return lista.getComentarios();
+        List<Object> comentarios = Arrays.asList(lista.getComentarios().toArray());
+        comentarios.sort((c1, c2) -> ((ComentarioLista)c1).getComment().getId() - ((ComentarioLista)c2).getComment().getId());
+
+        return comentarios;
+    }
+    public List<Object> getComments(int listId) throws ListNotFoundException {
+        ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
+
+        return getComments(lista);
     }
 
     /**
      * Retorna as categories pertencentes a uma lista.
      * @param listId id da lista a ser buscada
      * @return devolve as categorias da lista
-     * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
+     * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
     public Set<Categoria> getListCategories(int listId) throws ListNotFoundException {
         Set<Produto> produtos;
@@ -133,7 +142,7 @@ public class ListsController {
      * @throws EmptyCommentException caso o comentario esteja vazio
      * @throws UserNotInGroupException caso o usuario nao esteja inserido no respectivo grupo
      */
-    public Set<ComentarioLista> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+    public List<Object> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Usuario user = entityManager.find(Usuario.class, userId);
 
@@ -166,7 +175,7 @@ public class ListsController {
             }
         }
 
-        return lista.getComentarios();
+        return getComments(lista);
     }
 
     /**
@@ -188,6 +197,40 @@ public class ListsController {
         entityManager.getTransaction().commit();
 
         return lista;
+    }
+
+    /**
+     * Usuario apaga um de seus comentarios de uma lista
+     * @param listId id da lista onde esta o comentario
+     * @param userId id do usuario autor do comentario
+     * @param commentId id do comentario a ser removido
+     * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
+     */
+    public List<Object> deleteComment(int listId, int userId, int commentId)
+            throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException{
+        ListaDeCompras list = entityManager.find(ListaDeCompras.class, listId);
+        Usuario user = entityManager.find(Usuario.class, userId);
+        Comentario comment = entityManager.find(Comentario.class, commentId);
+
+        if(list == null) throw new ListNotFoundException();
+        if(user == null) throw new UserNotFoundException();
+        if(comment == null) throw new CommentNotFoundException();
+        if(!list.getGrupoDeUsuarios().containsUser(user)) throw new UserNotInGroupException();
+
+        ComentarioListaPK clPK = new ComentarioListaPK(user, list, comment);
+        ComentarioLista cl = entityManager.find(ComentarioLista.class, clPK);
+
+        if(cl == null) throw new NotUserCommentException();
+
+        list.getComentarios().remove(cl);
+        user.getComentarios().remove(cl);
+
+        entityManager.getTransaction().begin();
+        entityManager.remove(cl);
+        entityManager.remove(comment);
+        entityManager.getTransaction().commit();
+
+        return getComments(list);
     }
 
     /**
