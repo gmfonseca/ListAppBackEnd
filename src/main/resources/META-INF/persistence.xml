@@ -15,9 +15,9 @@
         <properties>
             <!-- dados da conexao -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://remotemysql.com:3306/r0DsttfFBm?useTimezone=true&amp;serverTimezone=UTC" />
-            <property name="javax.persistence.jdbc.user" value="r0DsttfFBm" />
-            <property name="javax.persistence.jdbc.password" value="aHvXSe5qJH" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://remotemysql.com:3306/sXSXoB3GpF?useTimezone=true&amp;serverTimezone=UTC" />
+            <property name="javax.persistence.jdbc.user" value="sXSXoB3GpF" />
+            <property name="javax.persistence.jdbc.password" value="D4y4diacTz" />
 
             <!--  propriedades do hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
