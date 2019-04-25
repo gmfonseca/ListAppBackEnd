@@ -155,8 +155,8 @@ public class ListsController {
         entityManager.persist(cl);
         entityManager.getTransaction().commit();
 
-        String notificationTitle = user.getNome() + " fez um comentário na lista " + lista.getNome();
-        String notificationBody  = "Clique aqui para ir para o app";
+        String notificationTitle = "Um novo comentário foi feito na lista " + lista.getNome();
+        String notificationBody  = user.getNome() + "\"" + comment + "\"";
         for (UsuarioGrupo usuarioGrupo : lista.getGrupoDeUsuarios().getUsuarios()) {
             try {
                 this.notificator.notifyUser(usuarioGrupo.getUsuario(), notificationTitle, notificationBody);
