@@ -46,7 +46,7 @@ public class ListsController {
     /**
      *
      */
-    public Set<Comentario> getComments(int listId) throws ListNotFoundException {
+    public Set<ComentarioLista> getComments(int listId) throws ListNotFoundException {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if(null == lista) throw new ListNotFoundException();
@@ -130,29 +130,29 @@ public class ListsController {
      * @throws EmptyCommentException caso o comentario esteja vazio
      * @throws UserNotInGroupException caso o usuario nao esteja inserido no respectivo grupo
      */
-    public ListaDeCompras addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
-            ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
-            Usuario user = entityManager.find(Usuario.class, userId);
+    public Set<ComentarioLista> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+        ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
+        Usuario user = entityManager.find(Usuario.class, userId);
 
-            if (null == lista) throw new ListNotFoundException();
-            if (null == user) throw new UserNotFoundException();
-            if (fieldIsEmpty(comment)) throw new EmptyCommentException();
-            if (!lista.getGrupoDeUsuarios().containsUser(user)) throw new UserNotInGroupException();
+        if (null == lista) throw new ListNotFoundException();
+        if (null == user) throw new UserNotFoundException();
+        if (fieldIsEmpty(comment)) throw new EmptyCommentException();
+        if (!lista.getGrupoDeUsuarios().containsUser(user)) throw new UserNotInGroupException();
 
-        try {
-            Comentario comentario = new Comentario(lista, user, comment);
+        Comentario comentario = new Comentario(comment);
 
-            user.getComentarios().add(comentario);
-            lista.addComentario(comentario);
+        ComentarioLista cl = new ComentarioLista(user, lista, comentario);
 
-            entityManager.getTransaction().begin();
-            entityManager.persist(comentario);
-            entityManager.getTransaction().commit();
-        }catch (Exception e){
-            if(entityManager.isOpen() || entityManager.isJoinedToTransaction()) entityManager.getTransaction().commit();
-        }
+        user.getComentarios().add(cl);
+        lista.getComentarios().add(cl);
+        comentario.getListas().add(cl);
 
-        return lista;
+        entityManager.getTransaction().begin();
+        entityManager.persist(comentario);
+        entityManager.persist(cl);
+        entityManager.getTransaction().commit();
+
+        return lista.getComentarios();
     }
 
     /**

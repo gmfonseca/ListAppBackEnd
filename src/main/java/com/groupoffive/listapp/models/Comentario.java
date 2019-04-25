@@ -4,64 +4,46 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "comentario")
-public class Comentario implements Serializable {
+public class Comentario {
 
-    private static final long serialVersionUID = 1L;
-
-    @JsonIgnore
-    @EmbeddedId
-    private ComentarioPK id = new ComentarioPK();
-
-    @Column
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private String comentario;
 
-    public Comentario(Usuario user, ListaDeCompras list, String comentario) {
-        this.id = new ComentarioPK(user, list);
+    @OneToMany(mappedBy = "id.comment")
+    private Set<ComentarioLista> listas = new HashSet<>();
+
+    public Comentario(String comentario) {
         this.comentario = comentario;
     }
 
-    public Comentario(ListaDeCompras list, Usuario user, String comentario) {
-        this(user, list, comentario);
-    }
+    public Comentario() {}
 
-    public Comentario() {
-    }
-
-    public Usuario getUsuario(){
-        return this.id.getUser();
-    }
-
-    public void setUsuario(Usuario usuario){
-        this.id.setUser(usuario);
-    }
-
-    @JsonIgnore
-    public ListaDeCompras getGrupo() {
-        return this.id.getList();
-    }
-
-    @JsonProperty
-    public void setGrupo(ListaDeCompras list){
-        this.id.setList(list);
-    }
-
-    public ComentarioPK getId() {
+    public int getId() {
         return id;
-    }
-
-    public void setId(ComentarioPK id) {
-        this.id = id;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public String getComentario() {
         return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    @JsonIgnore
+    public Set<ComentarioLista> getListas() {
+        return listas;
+    }
+
+    @JsonProperty
+    public void setListas(Set<ComentarioLista> listas) {
+        this.listas = listas;
     }
 }

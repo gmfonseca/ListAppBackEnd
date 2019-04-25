@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "grupo_de_usuarios")
-public class GrupoDeUsuarios implements Serializable {
+public class GrupoDeUsuarios {
 
     private static final long serialVersionUID = 1L;
 

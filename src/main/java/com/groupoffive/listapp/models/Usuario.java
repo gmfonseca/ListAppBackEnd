@@ -12,9 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,10 +28,10 @@ public class Usuario implements Serializable {
     private String senha;
 
     @OneToMany(mappedBy = "id.user")
-    private Set<Comentario> comentarios = new HashSet<>();
+    private Set<UsuarioGrupo> grupos = new HashSet<>();
 
     @OneToMany(mappedBy = "id.user")
-    private Set<UsuarioGrupo> grupos = new HashSet<>();
+    private Set<ComentarioLista> comentarios = new HashSet<>();
 
     public Usuario() {}
 
@@ -73,17 +71,13 @@ public class Usuario implements Serializable {
         this.grupos = grupos;
     }
 
-    public void addComentario(Comentario comentario){
-        comentarios.add(comentario);
-    }
-
     @JsonIgnore
-    public Set<Comentario> getComentarios() {
+    public Set<ComentarioLista> getComentarios() {
         return comentarios;
     }
 
     @JsonProperty
-    public void setComentarios(Set<Comentario> comentarios) {
+    public void setComentarios(Set<ComentarioLista> comentarios) {
         this.comentarios = comentarios;
     }
 

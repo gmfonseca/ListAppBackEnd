@@ -15,12 +15,13 @@ public class ListaDeCompras {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String nome;
+
     @ManyToOne
     @JoinColumn(name="grupo_de_usuarios_id")
     private GrupoDeUsuarios grupoDeUsuarios;
 
     @OneToMany(mappedBy = "id.list")
-    private Set<Comentario> comentarios = new HashSet<>();
+    private Set<ComentarioLista> comentarios = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
@@ -73,21 +74,17 @@ public class ListaDeCompras {
         this.produtos = produtos;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void addComentario(Comentario comentario){
-        comentarios.add(comentario);
-    }
-
     @JsonIgnore
-    public Set<Comentario> getComentarios() {
+    public Set<ComentarioLista> getComentarios() {
         return comentarios;
     }
 
     @JsonProperty
-    public void setComentarios(Set<Comentario> comentarios) {
+    public void setComentarios(Set<ComentarioLista> comentarios) {
         this.comentarios = comentarios;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

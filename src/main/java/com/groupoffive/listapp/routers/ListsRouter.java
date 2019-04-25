@@ -2,10 +2,7 @@ package com.groupoffive.listapp.routers;
 
 import com.groupoffive.listapp.controllers.ListsController;
 import com.groupoffive.listapp.exceptions.*;
-import com.groupoffive.listapp.models.Categoria;
-import com.groupoffive.listapp.models.Comentario;
-import com.groupoffive.listapp.models.ListaDeCompras;
-import com.groupoffive.listapp.models.Produto;
+import com.groupoffive.listapp.models.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -69,7 +66,7 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.GET)
     @ResponseBody
-    public Set<Comentario> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
+    public Set<ComentarioLista> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
         return listsController.getComments(listId);
     }
 
@@ -84,7 +81,7 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.PUT)
     @ResponseBody
-    public ListaDeCompras addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+    public Set<ComentarioLista> addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
         return listsController.addComment(listId, userId, comment);
     }
 
