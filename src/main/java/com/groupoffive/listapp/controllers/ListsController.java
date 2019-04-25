@@ -2,6 +2,7 @@ package com.groupoffive.listapp.controllers;
 
 import com.groupoffive.listapp.exceptions.*;
 import com.groupoffive.listapp.models.*;
+import com.groupoffive.listapp.util.NotificationService;
 
 import javax.persistence.EntityManager;
 import java.util.HashSet;
@@ -10,9 +11,11 @@ import java.util.Set;
 public class ListsController {
 
     private EntityManager entityManager;
+    private NotificationService notificator;
 
-    public ListsController(EntityManager entityManager) {
+    public ListsController(EntityManager entityManager, NotificationService notificator) {
         this.entityManager = entityManager;
+        this.notificator   = notificator;
     }
 
     public ListaDeCompras createList(String listName, int groupId) throws GroupNotFoundException {
@@ -151,6 +154,17 @@ public class ListsController {
         entityManager.persist(comentario);
         entityManager.persist(cl);
         entityManager.getTransaction().commit();
+
+        String notificationTitle = user.getNome() + " fez um comentário na lista " + lista.getNome();
+        String notificationBody  = "Clique aqui para ir para o app";
+        for (UsuarioGrupo usuarioGrupo : lista.getGrupoDeUsuarios().getUsuarios()) {
+            try {
+                this.notificator.notifyUser(usuarioGrupo.getUsuario(), notificationTitle, notificationBody);
+            } catch (UnableToNotifyUserException e) {
+                System.out.println("Ocorreu um erro ao notificar " + usuarioGrupo.getUsuario().getNome());
+                System.out.println(e.getMessage());
+            }
+        }
 
         return lista.getComentarios();
     }

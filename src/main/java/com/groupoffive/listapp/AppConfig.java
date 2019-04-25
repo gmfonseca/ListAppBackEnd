@@ -55,7 +55,7 @@ public class AppConfig {
 
     @Bean
     ListsController listsController() {
-        return new ListsController(this.getEntityManager());
+        return new ListsController(this.getEntityManager(), this.firebaseNotificationService());
     }
 
     @Bean
