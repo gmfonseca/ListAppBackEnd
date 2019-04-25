@@ -156,7 +156,7 @@ public class ListsController {
         entityManager.getTransaction().commit();
 
         String notificationTitle = "Um novo comentário foi feito na lista " + lista.getNome();
-        String notificationBody  = user.getNome() + "\"" + comment + "\"";
+        String notificationBody  = user.getNome() + ": \"" + comment + "\"";
         for (UsuarioGrupo usuarioGrupo : lista.getGrupoDeUsuarios().getUsuarios()) {
             try {
                 this.notificator.notifyUser(usuarioGrupo.getUsuario(), notificationTitle, notificationBody);
