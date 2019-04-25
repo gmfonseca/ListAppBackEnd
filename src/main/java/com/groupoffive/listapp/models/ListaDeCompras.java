@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "lista_de_compras")
@@ -21,7 +22,7 @@ public class ListaDeCompras {
     private GrupoDeUsuarios grupoDeUsuarios;
 
     @OneToMany(mappedBy = "id.list")
-    private Set<ComentarioLista> comentarios = new HashSet<>();
+    private Set<ComentarioLista> comentarios = new TreeSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(

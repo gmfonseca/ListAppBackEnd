@@ -18,7 +18,7 @@ import java.util.List;
 public class FirebaseNotificationService implements NotificationService {
 
     private EntityManager entityManager;
-    private String key = "AIzaSyBSxxxxsXevRq0trDbA9mhnY_2jqMoeChA";
+    private String key = "AAAA_5fn3M0:APA91bF51hwwFI8iIyBOvvAG6ipwt2tDDElxtmK0H5tP8HY_KY7ys6SCV7ff0XUnl4GT40nV-8BNI4JREuYptx-XGcbzbz9sa1wLTdyUnZtBBfu3Xx3tkrLp-PzQEiC_BKMYQefuixBW";
 
     public FirebaseNotificationService(EntityManager entityManager) {
         this.entityManager = entityManager;
