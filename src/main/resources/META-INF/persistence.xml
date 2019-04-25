@@ -25,8 +25,6 @@
             <property name="hibernate.format_sql" value="true" />
 
             <!--  atualiza o banco, gera as tabelas se for preciso -->
-            <property name="hibernate.hbm2ddl.auto" value="update" />
-            <property name="hibernate.connection.autocommit" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>
