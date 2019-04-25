@@ -5,6 +5,7 @@ import com.groupoffive.listapp.exceptions.*;
 import com.groupoffive.listapp.models.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RequestMapping("/lists")
@@ -66,22 +67,25 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.GET)
     @ResponseBody
-    public Set<ComentarioLista> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
+    public List<Object> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
         return listsController.getComments(listId);
     }
 
     /**
-     * Obtem as categorias de uma lista
-     * Método: GET
-     * /lists/{id}/categories
+     * Adiciona comentarios a uma lista
+     * Método: PUT
+     * /lists/{id}/comments
      * @param userId
      * @param comment
      * @return
      * @throws ListNotFoundException
+     * @throws UserNotFoundException
+     * @throws EmptyCommentException
+     * @throws UserNotInGroupException
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.PUT)
     @ResponseBody
-    public Set<ComentarioLista> addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+    public List<Object> addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
         return listsController.addComment(listId, userId, comment);
     }
 
@@ -111,6 +115,28 @@ public class ListsRouter {
     @ResponseBody
     public ListaDeCompras addProduct(@PathVariable("id") int listId, @PathVariable("productId") int productId) throws ListNotFoundException, ProductNotFoundException, ProductAlreadyInListException {
         return listsController.addProduct(listId, productId);
+    }
+
+    /**
+     * Adiciona comentarios a uma lista
+     * Método: DELETE
+     * /lists/{id}/comments/{commentId}
+     * @param listId
+     * @param userId
+     * @param commentId
+     *
+     * @return
+     *
+     * @throws ListNotFoundException
+     * @throws UserNotFoundException
+     * @throws CommentNotFoundException
+     * @throws UserNotInGroupException
+     * @throws NotUserCommentException
+     */
+    @RequestMapping(value = "/{id}/comments/{commentId}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public List<Object> deleteComment(@PathVariable("id") int listId, int userId, @PathVariable("commentId") int commentId)throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException {
+        return listsController.deleteComment(listId, userId, commentId);
     }
 
     /**
