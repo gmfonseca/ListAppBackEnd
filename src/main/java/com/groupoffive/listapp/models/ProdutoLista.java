@@ -20,6 +20,10 @@ public class ProdutoLista {
     @JoinColumn(name="produto_id")
     private Produto produto;
 
+    public ProdutoLista() {
+
+    }
+
     public ProdutoLista(ListaDeCompras listaDeCompras, Produto produto) {
         this.listaDeCompras = listaDeCompras;
         this.produto = produto;
