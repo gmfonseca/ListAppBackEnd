@@ -31,6 +31,18 @@ public class CategoriesController {
     }
 
     /**
+     * Devolve todas as categorias existentes
+     * @return
+     */
+    public Categoria getCategory(int categoryId) throws CategoryNotFoundException {
+        Categoria categoria = entityManager.find(Categoria.class, categoryId);
+
+        if(categoria == null) throw new CategoryNotFoundException();
+
+        return categoria;
+    }
+
+    /**
      * Devolve uma lista de categorias recomendadas para o nome do produto inserido.
      * Verifica a similaridade do nome deste produto com o das categorias e seus produtos.
      * @param productName nome do produto a ser comparado.

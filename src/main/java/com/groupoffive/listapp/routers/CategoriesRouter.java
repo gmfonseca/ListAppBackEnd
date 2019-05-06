@@ -24,6 +24,12 @@ public class CategoriesRouter {
         return categoriesController.getCategories();
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public Categoria getCategory(@PathVariable("id") int categoryId) throws CategoryNotFoundException{
+        return categoriesController.getCategory(categoryId);
+    }
+
     @RequestMapping(value = "/recommended/", method = RequestMethod.GET)
     @ResponseBody
     public Set<Categoria> getRecommendedCategories(String nomeProduto) {
