@@ -33,8 +33,10 @@ public class FirebaseNotificationService implements NotificationService {
             this.entityManager.remove(d);
         }
 
-        this.entityManager.persist(dispositivo);
-        this.entityManager.getTransaction().commit();
+        try {
+            this.entityManager.persist(dispositivo);
+            this.entityManager.getTransaction().commit();
+        } catch (Exception e) { }
     }
 
     @Override

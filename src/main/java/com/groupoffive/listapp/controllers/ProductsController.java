@@ -76,17 +76,22 @@ public class ProductsController {
         Categoria categoria = this.entityManager.find(Categoria.class, idCategoria);
         Produto produto = new Produto(nome, preco, categoria);
 
-        this.entityManager.getTransaction().begin();
-        categoria.getProdutos().add(produto);
-        this.entityManager.persist(produto);
-        this.entityManager.getTransaction().commit();
 
-        Usuario usuario = this.entityManager.find(Usuario.class, idUsuario);
         try {
+            Usuario usuario = this.entityManager.find(Usuario.class, idUsuario);
             new FirebaseNotificationService(this.entityManager).notifyUser(usuario, "Notícia sobre seu produto", "Seu produto " + nome + " foi aprovado e adicionado no banco de dados.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
+
+        try {
+            this.entityManager.getTransaction().begin();
+            categoria.getProdutos().add(produto);
+            this.entityManager.persist(produto);
+            this.entityManager.getTransaction().commit();
+        } catch (Exception e) { }
+
     }
 
     /**
