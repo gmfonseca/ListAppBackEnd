@@ -2,6 +2,7 @@ package com.groupoffive.listapp;
 
 import com.groupoffive.listapp.controllers.*;
 import com.groupoffive.listapp.routers.*;
+import com.groupoffive.listapp.util.AmazonQueue;
 import com.groupoffive.listapp.util.Crypt;
 import com.groupoffive.listapp.util.CryptSha256;
 import com.groupoffive.listapp.util.FirebaseNotificationService;
@@ -48,15 +49,14 @@ public class AppConfig {
     public CategoriesRouter categoriesRouter() {
         return new CategoriesRouter(categoriesController());
     }
+
     @Bean
     public ProductsRouter productsRouter() {
         return new ProductsRouter(productsController());
     }
 
     @Bean
-    ListsController listsController() {
-        return new ListsController(this.getEntityManager(), this.firebaseNotificationService());
-    }
+    ListsController listsController() { return new ListsController(this.getEntityManager(), this.firebaseNotificationService()); }
 
     @Bean
     GroupsController groupsController() {
@@ -64,9 +64,7 @@ public class AppConfig {
     }
 
     @Bean
-    UsersController usersController() {
-        return new UsersController(this.getEntityManager(), this.cryptSha256(), this.firebaseNotificationService());
-    }
+    UsersController usersController() { return new UsersController(this.getEntityManager(), this.cryptSha256(), this.firebaseNotificationService()); }
 
     @Bean
     CategoriesController categoriesController() {
@@ -74,13 +72,12 @@ public class AppConfig {
     }
 
     @Bean
-    ProductsController productsController() {
-        return new ProductsController(this.getEntityManager());
-    }
+    ProductsController productsController() { return new ProductsController(this.getEntityManager(), this.amazonQueue()); }
 
     @Bean
-    FirebaseNotificationService firebaseNotificationService() {
-        return new FirebaseNotificationService(this.getEntityManager());
-    }
+    FirebaseNotificationService firebaseNotificationService() { return new FirebaseNotificationService(this.getEntityManager()); }
+
+    @Bean
+    AmazonQueue amazonQueue() { return new AmazonQueue(); }
 
 }

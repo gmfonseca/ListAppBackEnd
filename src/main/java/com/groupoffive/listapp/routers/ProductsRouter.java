@@ -3,8 +3,12 @@ package com.groupoffive.listapp.routers;
 import com.groupoffive.listapp.controllers.ProductsController;
 import com.groupoffive.listapp.exceptions.*;
 import com.groupoffive.listapp.models.Produto;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Set;
 
 @RequestMapping("/products")
@@ -34,6 +38,12 @@ public class ProductsRouter {
         return productsController.getRecommendedProducts(nomeProduto);
     }
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Produto> getAllProducts() {
+        return productsController.getAllProducts();
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, params = { "nome", "preco", "idCategoria" })
     @ResponseBody
     public Produto updateProduct(@PathVariable("id") int idProduto, String nome, double preco, int idCategoria)
@@ -58,6 +68,12 @@ public class ProductsRouter {
     @ResponseBody
     public void removeProduct(@PathVariable("id") int idProduto) throws ProductNotFoundException {
         productsController.removeProduct(idProduto);
+    }
+
+    @RequestMapping(value = "/sendProductAcceptedNotification", method = RequestMethod.POST)
+    @ResponseBody
+    public void onProductAcceptedNotification(String nome, double preco, int idCategoria) {
+        productsController.onProductAcceptedNotification(nome, preco, idCategoria);
     }
 
 }
