@@ -20,16 +20,16 @@ public class ProductsRouter {
         this.productsController = productsController;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST, params = { "nome", "preco", "idCategoria" })
+    @RequestMapping(value = "/", method = RequestMethod.POST, params = { "nome", "preco", "idCategoria", "idUsuario" })
     @ResponseBody
-    public Produto addProduct(String nome, double preco, int idCategoria) throws ProductNameAlreadyInUseException, CategoryNotFoundException {
-        return productsController.addProduct(nome, preco, idCategoria);
+    public Produto addProduct(String nome, double preco, int idCategoria, int idUsuario) throws ProductNameAlreadyInUseException, CategoryNotFoundException {
+        return productsController.addProduct(nome, preco, idCategoria, idUsuario);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST, params = { "nome", "preco", "nomeCategoria" })
+    @RequestMapping(value = "/", method = RequestMethod.POST, params = { "nome", "preco", "nomeCategoria", "idUsuario" })
     @ResponseBody
-    public Produto addProduct(String nome, double preco, String nomeCategoria) throws ProductNameAlreadyInUseException, CategoryNameAlreadyInUseException {
-        return productsController.addProduct(nome, preco, nomeCategoria);
+    public Produto addProduct(String nome, double preco, String nomeCategoria, int idUsuario) throws ProductNameAlreadyInUseException, CategoryNameAlreadyInUseException {
+        return productsController.addProduct(nome, preco, nomeCategoria, idUsuario);
     }
 
     @RequestMapping(value = "/recommended/", method = RequestMethod.GET, params = { "nomeProduto" })
@@ -72,8 +72,8 @@ public class ProductsRouter {
 
     @RequestMapping(value = "/sendProductAcceptedNotification", method = RequestMethod.POST)
     @ResponseBody
-    public void onProductAcceptedNotification(String nome, double preco, int idCategoria) {
-        productsController.onProductAcceptedNotification(nome, preco, idCategoria);
+    public void onProductAcceptedNotification(String nome, double preco, int idCategoria, int idUsuario) {
+        productsController.onProductAcceptedNotification(nome, preco, idCategoria, idUsuario);
     }
 
 }

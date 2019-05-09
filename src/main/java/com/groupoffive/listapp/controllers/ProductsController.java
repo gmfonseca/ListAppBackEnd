@@ -5,9 +5,8 @@ import com.groupoffive.listapp.exceptions.*;
 import com.groupoffive.listapp.models.Categoria;
 import com.groupoffive.listapp.models.ListaDeCompras;
 import com.groupoffive.listapp.models.Produto;
-import com.groupoffive.listapp.util.AmazonQueue;
-import com.groupoffive.listapp.util.Levenshtein;
-import com.groupoffive.listapp.util.MapSorter;
+import com.groupoffive.listapp.models.Usuario;
+import com.groupoffive.listapp.util.*;
 import com.groupoffive.listapp.util.Queue;
 
 import javax.persistence.EntityManager;
@@ -57,7 +56,7 @@ public class ProductsController {
      * @param idCategoria
      * @return
      */
-    public Produto addProduct(String nome, double preco, int idCategoria) throws ProductNameAlreadyInUseException, CategoryNotFoundException {
+    public Produto addProduct(String nome, double preco, int idCategoria, int idUsuario) throws ProductNameAlreadyInUseException, CategoryNotFoundException {
         if (this.productNameIsInUse(nome)) throw new ProductNameAlreadyInUseException();
 
         Categoria categoria = this.entityManager.find(Categoria.class, idCategoria);
@@ -66,14 +65,14 @@ public class ProductsController {
         Produto produto = new Produto(nome, preco, categoria);
 
         this.queue.sendMessageToQueue(
-                "{ \"nomeProduto\": \"" + nome + "\", \"preco\": " + preco + ", \"idCategoria\": " + idCategoria,
+                "{ \"nomeProduto\": \"" + nome + "\", \"preco\": " + preco + ", \"idCategoria\": " + idCategoria + ", \"idUsuario\": " + idUsuario + "}",
                 AmazonQueue.QUEUE_PRODUCT_ANALYSE
         );
 
         return produto;
     }
 
-    public void onProductAcceptedNotification(String nome, double preco, int idCategoria) {
+    public void onProductAcceptedNotification(String nome, double preco, int idCategoria, int idUsuario) {
         Categoria categoria = this.entityManager.find(Categoria.class, idCategoria);
         Produto produto = new Produto(nome, preco, categoria);
 
@@ -81,6 +80,13 @@ public class ProductsController {
         categoria.getProdutos().add(produto);
         this.entityManager.persist(produto);
         this.entityManager.getTransaction().commit();
+
+        Usuario usuario = this.entityManager.find(Usuario.class, idUsuario);
+        try {
+            new FirebaseNotificationService(this.entityManager).notifyUser(usuario, "Notícia sobre seu produto", "Seu produto " + nome + " foi aprovado e adicionado no banco de dados.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -92,14 +98,15 @@ public class ProductsController {
      * @throws ProductNameAlreadyInUseException
      * @throws CategoryNameAlreadyInUseException
      */
-    public Produto addProduct(String nome, double preco, String nomeCategoria) throws ProductNameAlreadyInUseException, CategoryNameAlreadyInUseException {
+    public Produto addProduct(String nome, double preco, String nomeCategoria, int idUsuario) throws ProductNameAlreadyInUseException, CategoryNameAlreadyInUseException {
         try {
             Categoria categoria = AppConfig.getContext().getBean("categoriesController", CategoriesController.class).addCategory(nomeCategoria, true);
             this.queue.sendMessageToQueue(
-                    "{ \"nomeProduto\": \"" + nome + "\", \"preco\": " + preco + ", \"idCategoria\": " + categoria.getId(),
+                    "{ \"nomeProduto\": \"" + nome + "\", \"preco\": " + preco + ", \"idCategoria\": " + categoria.getId() + ", \"idUsuario\": " + idUsuario + "}",
                     AmazonQueue.QUEUE_PRODUCT_ANALYSE
             );
-            return this.addProduct(nome, preco, categoria.getId());
+            System.out.println("{ \"nomeProduto\": \"" + nome + "\", \"preco\": " + preco + ", \"idCategoria\": " + categoria.getId());
+            return this.addProduct(nome, preco, categoria.getId(), idUsuario);
         } catch (CategoryNotFoundException e) {
             // Tenho muita fé de que isso não vai acontecer
             return null;

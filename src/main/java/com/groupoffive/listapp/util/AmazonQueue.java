@@ -10,7 +10,7 @@ public class AmazonQueue implements Queue {
     private       AmazonSQS sqs                   = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
 
     public void sendMessageToQueue(String message, String queueUrl) {
-        sqs.sendMessage(new SendMessageRequest(queueUrl, queueUrl));
+        sqs.sendMessage(new SendMessageRequest(queueUrl, message));
     }
 
 }
