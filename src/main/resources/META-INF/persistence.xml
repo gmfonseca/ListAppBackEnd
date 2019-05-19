@@ -4,7 +4,7 @@
      http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
              version="2.0">
 
-    <persistence-unit name="mydb">
+    <persistence-unit name="heroku_159f561881b902b">
 
         <!-- provedor/implementacao do JPA -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -12,9 +12,9 @@
         <properties>
             <!-- dados da conexao -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://remotemysql.com:3306/sXSXoB3GpF?useTimezone=true&amp;serverTimezone=UTC" />
-            <property name="javax.persistence.jdbc.user" value="sXSXoB3GpF" />
-            <property name="javax.persistence.jdbc.password" value="D4y4diacTz" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://be3e8f95c3d7d7:c94cbb9a@us-cdbr-iron-east-02.cleardb.net/heroku_159f561881b902b?reconnect=true" />
+            <property name="javax.persistence.jdbc.user" value="be3e8f95c3d7d7" />
+            <property name="javax.persistence.jdbc.password" value="c94cbb9a" />
 
             <!--  propriedades do hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />

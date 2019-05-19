@@ -22,7 +22,7 @@ public class AppConfig {
 
     @Bean
     public EntityManager getEntityManager() {
-        return Persistence.createEntityManagerFactory("mydb").createEntityManager();
+        return Persistence.createEntityManagerFactory("heroku_159f561881b902b").createEntityManager();
     }
 
     @Bean
