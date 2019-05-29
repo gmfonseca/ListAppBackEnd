@@ -9,15 +9,15 @@ public class ComentarioListaPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="comentario_id", insertable = false, updatable = false)
     private Comentario comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="lista_compra_id", insertable = false, updatable = false)
     private ListaDeCompras list;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="usuario_id", insertable = false, updatable = false)
     private Usuario user;
 

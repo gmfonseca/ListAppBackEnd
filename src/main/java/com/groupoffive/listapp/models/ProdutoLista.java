@@ -12,11 +12,11 @@ public class ProdutoLista {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="lista_de_compras_id")
     private ListaDeCompras listaDeCompras;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="produto_id")
     private Produto produto;
 

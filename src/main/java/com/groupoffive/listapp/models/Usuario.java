@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,10 +26,10 @@ public class Usuario {
     @NotNull
     private String senha;
 
-    @OneToMany(mappedBy = "id.user")
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.EAGER)
     private Set<UsuarioGrupo> grupos = new HashSet<>();
 
-    @OneToMany(mappedBy = "id.user")
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.EAGER)
     private Set<ComentarioLista> comentarios = new HashSet<>();
 
     public Usuario() {}

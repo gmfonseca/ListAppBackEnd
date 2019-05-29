@@ -17,14 +17,14 @@ public class ListaDeCompras {
     private int id;
     private String nome;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="grupo_de_usuarios_id")
     private GrupoDeUsuarios grupoDeUsuarios;
 
-    @OneToMany(mappedBy = "id.list")
+    @OneToMany(mappedBy = "id.list", fetch = FetchType.EAGER)
     private Set<ComentarioLista> comentarios = new TreeSet<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "produto_lista",
             joinColumns = { @JoinColumn(name = "lista_de_compras_id") },

@@ -1,7 +1,6 @@
 package com.groupoffive.listapp.models;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -19,13 +18,13 @@ public class GrupoDeUsuarios {
 
     private String nome;
 
-    @OneToMany(mappedBy = "id.group")
+    @OneToMany(mappedBy = "id.group", fetch = FetchType.EAGER)
     private Set<UsuarioGrupo> usuarios = new HashSet<>();
 
-    @OneToMany(mappedBy="grupoDeUsuarios")
+    @OneToMany(mappedBy="grupoDeUsuarios", fetch = FetchType.EAGER)
     private Set<ListaDeCompras> listasDeCompras = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="criador")
     private Usuario criador;
 

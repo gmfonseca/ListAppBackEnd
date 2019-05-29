@@ -10,7 +10,7 @@ public class Dispositivo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
     protected String firebaseToken;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="Usuario_id")
     private Usuario usuario;
 

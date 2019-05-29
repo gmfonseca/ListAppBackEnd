@@ -16,7 +16,7 @@ public class Comentario {
     private int id;
     private String comentario;
 
-    @OneToMany(mappedBy = "id.comment")
+    @OneToMany(mappedBy = "id.comment", fetch = FetchType.EAGER)
     private Set<ComentarioLista> listas = new HashSet<>();
 
     public Comentario(String comentario) {

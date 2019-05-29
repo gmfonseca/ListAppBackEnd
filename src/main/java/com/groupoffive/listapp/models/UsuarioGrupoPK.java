@@ -1,6 +1,7 @@
 package com.groupoffive.listapp.models;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
@@ -11,11 +12,11 @@ public class UsuarioGrupoPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="grupo_de_usuarios_id", insertable = false, updatable = false)
     private GrupoDeUsuarios group;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="usuario_id", insertable = false, updatable = false)
     private Usuario user;
 

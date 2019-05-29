@@ -29,6 +29,7 @@ public class CategoriesController {
         List<Categoria> listaCategorias = this.entityManager.createQuery("SELECT c FROM Categoria c", Categoria.class).getResultList();
         HashSet<Categoria> categorias   = new HashSet<>(listaCategorias);
 
+        entityManager.close();
         return categorias;
     }
 
@@ -175,6 +176,7 @@ public class CategoriesController {
                     "SELECT c from Categoria c WHERE c.nome = :nome", Categoria.class
             ).setParameter("nome", nome).getSingleResult();
 
+
             return null != categoria;
         } catch (NoResultException e) {
 
@@ -194,7 +196,7 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
@@ -202,7 +204,7 @@ public class CategoriesController {
         categoria.setNome(nome);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return categoria;
     }
 
@@ -216,7 +218,7 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
@@ -235,7 +237,7 @@ public class CategoriesController {
         entityManager.remove(categoria);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
     }
 
 }
