@@ -1,5 +1,6 @@
 package com.groupoffive.listapp.util;
 
+import com.groupoffive.listapp.AppConfig;
 import com.groupoffive.listapp.exceptions.UnableToNotifyUserException;
 import com.groupoffive.listapp.models.Dispositivo;
 import com.groupoffive.listapp.models.Usuario;
@@ -17,24 +18,23 @@ import java.util.List;
 
 public class FirebaseNotificationService implements NotificationService {
 
-    private EntityManager entityManager;
+    private EntityManager entityManager = AppConfig.getEntityManager();
     private String key = "AAAA_5fn3M0:APA91bF51hwwFI8iIyBOvvAG6ipwt2tDDElxtmK0H5tP8HY_KY7ys6SCV7ff0XUnl4GT40nV-8BNI4JREuYptx-XGcbzbz9sa1wLTdyUnZtBBfu3Xx3tkrLp-PzQEiC_BKMYQefuixBW";
 
-    public FirebaseNotificationService(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public FirebaseNotificationService() {
     }
 
     @Override
     public void persistToken(Usuario usuario, String firebaseToken) {
         Dispositivo dispositivo = new Dispositivo(firebaseToken, usuario);
 
-        this.entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         for (Dispositivo d : this.getConnectedDevicesFromUser(usuario.getId())) {
             this.entityManager.remove(d);
         }
 
-        this.entityManager.persist(dispositivo);
-        this.entityManager.getTransaction().commit();
+        entityManager.persist(dispositivo);
+        entityManager.getTransaction().commit();
     }
 
     @Override

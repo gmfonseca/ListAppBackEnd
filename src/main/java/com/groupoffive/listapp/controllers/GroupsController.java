@@ -1,7 +1,11 @@
 package com.groupoffive.listapp.controllers;
 
+import com.groupoffive.listapp.AppConfig;
 import com.groupoffive.listapp.exceptions.*;
-import com.groupoffive.listapp.models.*;
+import com.groupoffive.listapp.models.GrupoDeUsuarios;
+import com.groupoffive.listapp.models.Usuario;
+import com.groupoffive.listapp.models.UsuarioGrupo;
+import com.groupoffive.listapp.models.UsuarioGrupoPK;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -14,9 +18,7 @@ public class GroupsController {
 
     private EntityManager entityManager;
 
-    public GroupsController(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    public GroupsController() {}
 
     /**
      * Retorna os grupos aos quais um usuario esta associado.
@@ -27,15 +29,22 @@ public class GroupsController {
      * @throws UserNotFoundException caso o usuario solicitado nao esteja cadastrado ou nao esteja em algum grupo
      */
     private Set<GrupoDeUsuarios> getGroupsFromUser(Usuario usuario) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         if (null == usuario) throw new UserNotFoundException();
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
+
         return grupos;
     }
+
     public Set<GrupoDeUsuarios> getGroupsFromUser(int userId) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario usuario = entityManager.find(Usuario.class, userId);
+
 
         return getGroupsFromUser(usuario);
     }
@@ -49,6 +58,8 @@ public class GroupsController {
      * @throws GroupNotFoundException caso o grupo solicitado nao esteja cadastrado
      */
     private Set<Usuario> getUsersFromGroup(GrupoDeUsuarios group) throws GroupNotFoundException{
+        entityManager = AppConfig.getEntityManager();
+
         if(null == group) throw new GroupNotFoundException();
 
         Set<Usuario> users = new HashSet<>();
@@ -57,10 +68,14 @@ public class GroupsController {
             users.add(user_group.getUsuario());
         });
 
+
         return users;
     }
     public Set<Usuario> getUsersFromGroup(int groupId) throws GroupNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         GrupoDeUsuarios grupo = entityManager.find(GrupoDeUsuarios.class, groupId);
+
 
         return getUsersFromGroup(grupo);
     }
@@ -74,9 +89,12 @@ public class GroupsController {
      * @throws GroupNotFoundException caso o grupo solicitado nao esteja cadastrado
      */
     public GrupoDeUsuarios getGroup(int groupId) throws GroupNotFoundException{
+        entityManager = AppConfig.getEntityManager();
+
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
 
         if(group == null) throw new GroupNotFoundException();
+
 
         return group;
     }
@@ -92,25 +110,34 @@ public class GroupsController {
      * @throws UserNotFoundException caso o usuario solicitado nao esteja cadastrado
      */
     private GrupoDeUsuarios createGroup(String nome, Usuario criador) throws UserNotFoundException{
+        entityManager = AppConfig.getEntityManager();
+
         if(criador == null) throw new UserNotFoundException();
 
         GrupoDeUsuarios group = new GrupoDeUsuarios(nome, criador);
         UsuarioGrupo ug = new UsuarioGrupo(criador, group, true);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(group);
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
+
         return group;
     }
-    public GrupoDeUsuarios createGroup(String nome, int creator_id) throws UserNotFoundException{
+    public GrupoDeUsuarios createGroup(String nome, int creator_id) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario criador = entityManager.find(Usuario.class, creator_id);
+
 
         return createGroup(nome, criador);
     }
-    public GrupoDeUsuarios createGroup(String nome, String creator_name) throws UserNotFoundException{
+    public GrupoDeUsuarios createGroup(String nome, String creator_name) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario criador = getUserByName(creator_name);
+
 
         return createGroup(nome, criador);
     }
@@ -127,7 +154,9 @@ public class GroupsController {
      * @throws GroupNotFoundException caso o grupo solicitado nao esteja cadastrado
      * @throws UserAlreadyInGroupException caso o usuario ja esteja inserido no respectivo grupo
      */
-    private GrupoDeUsuarios addUserToGroup(Usuario user, GrupoDeUsuarios group) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException{
+    private GrupoDeUsuarios addUserToGroup(Usuario user, GrupoDeUsuarios group) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         if(group == null) throw new GroupNotFoundException();
         if(user == null) throw new UserNotFoundException();
 
@@ -141,23 +170,30 @@ public class GroupsController {
 
         UsuarioGrupo ug = new UsuarioGrupo(user, group, admin);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(group);
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
+
         return group;
     }
-    public GrupoDeUsuarios addUserToGroup(int user_id, int group_id) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException{
+    public GrupoDeUsuarios addUserToGroup(int user_id, int group_id) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = entityManager.find(Usuario.class, user_id);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
+
 
         return addUserToGroup(user, group);
     }
 
-    public GrupoDeUsuarios addUserToGroup(String email, int group_id) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException{
+    public GrupoDeUsuarios addUserToGroup(String email, int group_id) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = getUserByEmail(email);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
+
 
         return addUserToGroup(user, group);
     }
@@ -174,7 +210,9 @@ public class GroupsController {
      * @throws GroupNotFoundException caso o grupo solicitado nao esteja cadastrado
      * @throws UserNotInGroupException caso o usuario nao esteja inserido no respectivo grupo
      */
-    private GrupoDeUsuarios removeUserFromGroup(Usuario user, GrupoDeUsuarios group) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException{
+    private GrupoDeUsuarios removeUserFromGroup(Usuario user, GrupoDeUsuarios group) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         if(group == null) throw new GroupNotFoundException();
         if(user == null) throw new UserNotFoundException();
 
@@ -191,7 +229,7 @@ public class GroupsController {
             group.getUsuarios().remove(ug);
             user.getGrupos().remove(ug);
 
-            entityManager.getTransaction().begin();
+            if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
             entityManager.remove(ug);
             entityManager.getTransaction().commit();
 
@@ -212,7 +250,7 @@ public class GroupsController {
                     }
                 }
 
-                entityManager.getTransaction().begin();
+                if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
                 entityManager.persist(group);
                 entityManager.getTransaction().commit();
             } else {
@@ -224,18 +262,26 @@ public class GroupsController {
             //
         }
 
+
         return group;
     }
-    public GrupoDeUsuarios removeUserFromGroup(int user_id, int group_id) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException{
+
+    public GrupoDeUsuarios removeUserFromGroup(int user_id, int group_id) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = entityManager.find(Usuario.class, user_id);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
+
 
         return removeUserFromGroup(user, group);
     }
 
-    public GrupoDeUsuarios removeUserFromGroup(String user_name, int group_id) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException{
+    public GrupoDeUsuarios removeUserFromGroup(String user_name, int group_id) throws GroupNotFoundException, UserNotFoundException, UserNotInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = getUserByName(user_name);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
+
 
         return removeUserFromGroup(user, group);
     }
@@ -258,6 +304,8 @@ public class GroupsController {
     private GrupoDeUsuarios toggleUserGroupAdmin(Usuario user, GrupoDeUsuarios group, boolean admin)
             throws UserNotFoundException, GroupNotFoundException, UserNotInGroupException, UserGroupCreatorException, UserAlreadyGroupAdminException, UserWasNotGroupAdminException {
 
+        entityManager = AppConfig.getEntityManager();
+
         if(group == null) throw new GroupNotFoundException();
         if(user == null) throw new UserNotFoundException();
 
@@ -277,24 +325,33 @@ public class GroupsController {
         group.getUsuarios().add(ug);
         user.getGrupos().add(ug);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(group);
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
+
 
         return group;
     }
     public GrupoDeUsuarios toggleUserGroupAdmin(int userId, int groupId, boolean admin)
             throws UserNotFoundException, GroupNotFoundException, UserNotInGroupException, UserGroupCreatorException, UserAlreadyGroupAdminException, UserWasNotGroupAdminException {
+
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = entityManager.find(Usuario.class, userId);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
+
 
         return toggleUserGroupAdmin(user, group, admin);
     }
     public GrupoDeUsuarios toggleUserGroupAdmin(String userName, int groupId, boolean admin)
             throws UserNotFoundException, GroupNotFoundException, UserNotInGroupException, UserGroupCreatorException, UserAlreadyGroupAdminException, UserWasNotGroupAdminException {
+
+        entityManager = AppConfig.getEntityManager();
+
         Usuario user = getUserByName(userName);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
+
 
         return toggleUserGroupAdmin(user, group, admin);
     }
@@ -308,6 +365,8 @@ public class GroupsController {
      * @throws GroupNotFoundException caso o grupo solicitado nao esteja cadastrado
      */
     private GrupoDeUsuarios deleteGroup(GrupoDeUsuarios group, Usuario eraserUser) throws GroupNotFoundException, UserNotFoundException, NotGroupOwnerException {
+
+        entityManager = AppConfig.getEntityManager();
 
         if (group == null) throw new GroupNotFoundException();
         if (eraserUser == null) throw new UserNotFoundException();
@@ -332,7 +391,7 @@ public class GroupsController {
             });
 
             group.setUsuarios(new HashSet<>());
-            entityManager.getTransaction().begin();
+            if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
             usuarios.forEach(usuario -> {
                 UsuarioGrupo ug = entityManager.find(UsuarioGrupo.class, new UsuarioGrupoPK(usuario, group));
 
@@ -340,18 +399,22 @@ public class GroupsController {
             });
             entityManager.getTransaction().commit();
 
-            entityManager.getTransaction().begin();
+            if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
             entityManager.remove(group);
             entityManager.getTransaction().commit();
         }catch (Exception e){
             //
         }
 
+
         return group;
     }
     public GrupoDeUsuarios deleteGroup(int groupId, int eraserUserId) throws GroupNotFoundException, UserNotFoundException, NotGroupOwnerException {
+        entityManager = AppConfig.getEntityManager();
+
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
         Usuario eraserUser = entityManager.find(Usuario.class, eraserUserId);
+
 
         return deleteGroup(group, eraserUser);
     }
@@ -365,9 +428,11 @@ public class GroupsController {
     private Usuario getUserByName(String nome){
         try{
 
+
             return entityManager.createQuery("SELECT u from Usuario u WHERE u.nome = :nome", Usuario.class).setParameter("nome", nome).getSingleResult();
 
         }catch(NoResultException e){
+
             return null;
         }
     }
@@ -381,9 +446,11 @@ public class GroupsController {
     private Usuario getUserByEmail(String email){
         try{
 
+
             return entityManager.createQuery("SELECT u from Usuario u WHERE u.email = :email", Usuario.class).setParameter("email", email).getSingleResult();
 
         }catch(NoResultException e){
+
             return null;
         }
     }

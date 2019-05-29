@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "comentario_lista")
-public class ComentarioLista {
+public class ComentarioLista implements Comparable<ComentarioLista> {
 
     @EmbeddedId
     private ComentarioListaPK id;
@@ -50,5 +50,10 @@ public class ComentarioLista {
 
     public void setComment(Comentario comment) {
         id.setComment(comment);
+    }
+
+    @Override
+    public int compareTo(ComentarioLista o) {
+        return new Integer(this.getComment().getId()).compareTo(o.getComment().getId());
     }
 }

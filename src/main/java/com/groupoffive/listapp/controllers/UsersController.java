@@ -1,5 +1,6 @@
 package com.groupoffive.listapp.controllers;
 
+import com.groupoffive.listapp.AppConfig;
 import com.groupoffive.listapp.exceptions.EmailAlreadyInUseException;
 import com.groupoffive.listapp.exceptions.IncorrectEmailOrPasswordException;
 import com.groupoffive.listapp.exceptions.NotFilledRequiredFieldsException;
@@ -20,17 +21,19 @@ public class UsersController {
     private Crypt crypt;
     private NotificationService notificationService;
 
-    public UsersController(EntityManager entityManager, Crypt crypt, NotificationService notificationService) {
-        this.entityManager       = entityManager;
+    public UsersController(Crypt crypt, NotificationService notificationService) {
         this.crypt               = crypt;
         this.notificationService = notificationService;
     }
 
     private Set<GrupoDeUsuarios> getGroupsFromUser(Usuario usuario) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         if (null == usuario) throw new UserNotFoundException();
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
+
 
         return grupos;
     }
@@ -42,7 +45,10 @@ public class UsersController {
      * @throws UserNotFoundException caso o usuario solicitado nao esteja cadastrado ou nao esteja em algum grupo
      */
     public Set<GrupoDeUsuarios> getGroupsFromUser(int userId) throws UserNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Usuario usuario = entityManager.find(Usuario.class, userId);
+
 
         return getGroupsFromUser(usuario);
     }
@@ -57,6 +63,8 @@ public class UsersController {
      * @throws IncorrectEmailOrPasswordException    caso o campo de senha e/ou email nao batam com algum registro da base de dados
      */
     public Usuario login(String email, String senha, String FCMToken) throws IncorrectEmailOrPasswordException {
+        entityManager = AppConfig.getEntityManager();
+
         String cryptedPass = crypt.cryptString(senha);
 
         try {
@@ -66,8 +74,10 @@ public class UsersController {
 
             if (FCMToken != null) this.notificationService.persistToken(usuario, FCMToken);
 
+
             return usuario;
         } catch (NoResultException e) {
+
             throw new IncorrectEmailOrPasswordException();
         }
     }
@@ -83,6 +93,7 @@ public class UsersController {
      * @throws EmailAlreadyInUseException           caso o email ja esteja cadastrado em outro usuario
      */
     public Usuario addUser(String nome, String email, String senha) throws NotFilledRequiredFieldsException, EmailAlreadyInUseException {
+        entityManager = AppConfig.getEntityManager();
 
         if(fieldIsEmpty(nome) || fieldIsEmpty(email) || fieldIsEmpty(senha)) throw new NotFilledRequiredFieldsException();
         if(this.emailIsInUse(email)) throw new EmailAlreadyInUseException();
@@ -91,9 +102,10 @@ public class UsersController {
 
         Usuario usuario = new Usuario(nome, email, cryptedPass);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(usuario);
         entityManager.getTransaction().commit();
+
 
         return usuario;
     }

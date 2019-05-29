@@ -1,32 +1,38 @@
 package com.groupoffive.listapp.controllers;
 
+import com.groupoffive.listapp.AppConfig;
 import com.groupoffive.listapp.exceptions.*;
 import com.groupoffive.listapp.models.*;
 import com.groupoffive.listapp.util.NotificationService;
 
 import javax.persistence.EntityManager;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ListsController {
 
     private EntityManager entityManager;
     private NotificationService notificator;
 
-    public ListsController(EntityManager entityManager, NotificationService notificator) {
-        this.entityManager = entityManager;
+    public ListsController(NotificationService notificator) {
         this.notificator   = notificator;
     }
 
     public ListaDeCompras createList(String listName, int groupId) throws GroupNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         GrupoDeUsuarios grupo = entityManager.find(GrupoDeUsuarios.class, groupId);
 
         if (null == grupo) throw new GroupNotFoundException();
         ListaDeCompras lista = new ListaDeCompras(listName, grupo);
         grupo.getListasDeCompras().add(lista);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
+
 
         return lista;
     }
@@ -38,9 +44,12 @@ public class ListsController {
      * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
     public Set<Produto> getListProducts(int listId) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) throw new ListNotFoundException();
+
 
         return lista.getProdutos();
     }
@@ -52,16 +61,20 @@ public class ListsController {
      * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
     private List<Object> getComments(ListaDeCompras lista) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
 
         if(null == lista) throw new ListNotFoundException();
 
-        List<Object> comentarios = Arrays.asList(lista.getComentarios().toArray());
-        comentarios.sort((c1, c2) -> ((ComentarioLista)c1).getComment().getId() - ((ComentarioLista)c2).getComment().getId());
+        List<Object> comentarios = Collections.singletonList(lista.getComentarios());
+
 
         return comentarios;
     }
     public List<Object> getComments(int listId) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
+
 
         return getComments(lista);
     }
@@ -73,6 +86,8 @@ public class ListsController {
      * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
     public Set<Categoria> getListCategories(int listId) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Set<Produto> produtos;
         Set<Categoria> categorias = new HashSet<>();
         ListaDeCompras lista  = entityManager.find(ListaDeCompras.class, listId);
@@ -94,10 +109,13 @@ public class ListsController {
             categorias.add(categoria);
         }
 
+
         return categorias;
     }
 
     public ListaDeCompras addProduct(int listId, int productId) throws ListNotFoundException, ProductNotFoundException, ProductAlreadyInListException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Produto produto = entityManager.find(Produto.class, productId);
 
@@ -107,14 +125,17 @@ public class ListsController {
 
         lista.getProdutos().add(produto);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
+
 
         return lista;
     }
 
     public ListaDeCompras removeProduct(int listId, int productId) throws ListNotFoundException, ProductNotFoundException, ProductDoesNotInListException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Produto produto = entityManager.find(Produto.class, productId);
 
@@ -124,9 +145,10 @@ public class ListsController {
 
         lista.getProdutos().remove(produto);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
+
 
         return lista;
     }
@@ -143,6 +165,8 @@ public class ListsController {
      * @throws UserNotInGroupException caso o usuario nao esteja inserido no respectivo grupo
      */
     public List<Object> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Usuario user = entityManager.find(Usuario.class, userId);
 
@@ -159,7 +183,7 @@ public class ListsController {
         lista.getComentarios().add(cl);
         comentario.getListas().add(cl);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(comentario);
         entityManager.persist(cl);
         entityManager.getTransaction().commit();
@@ -175,6 +199,7 @@ public class ListsController {
             }
         }
 
+
         return getComments(lista);
     }
 
@@ -186,15 +211,18 @@ public class ListsController {
      * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
      */
     public ListaDeCompras renameList(int listId, String nomeLista) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) throw new ListNotFoundException();
 
         lista.setNome(nomeLista);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
+
 
         return lista;
     }
@@ -207,7 +235,9 @@ public class ListsController {
      * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
      */
     public List<Object> deleteComment(int listId, int userId, int commentId)
-            throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException{
+            throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras list = entityManager.find(ListaDeCompras.class, listId);
         Usuario user = entityManager.find(Usuario.class, userId);
         Comentario comment = entityManager.find(Comentario.class, commentId);
@@ -225,10 +255,11 @@ public class ListsController {
         list.getComentarios().remove(cl);
         user.getComentarios().remove(cl);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.remove(cl);
         entityManager.remove(comment);
         entityManager.getTransaction().commit();
+
 
         return getComments(list);
     }
@@ -239,19 +270,23 @@ public class ListsController {
      * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
      */
     public void deleteList(int listId) throws ListNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) throw new ListNotFoundException();
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         lista.getGrupoDeUsuarios().getListasDeCompras().remove(lista);
         entityManager.getTransaction().commit();
 
         lista.setProdutos(new HashSet<>());
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.remove(lista);
         entityManager.getTransaction().commit();
+
+
     }
 
     /**

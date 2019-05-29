@@ -1,5 +1,6 @@
 package com.groupoffive.listapp.controllers;
 
+import com.groupoffive.listapp.AppConfig;
 import com.groupoffive.listapp.exceptions.CategoryNameAlreadyInUseException;
 import com.groupoffive.listapp.exceptions.CategoryNotFoundException;
 import com.groupoffive.listapp.models.Categoria;
@@ -15,8 +16,7 @@ public class CategoriesController {
 
     private EntityManager entityManager;
 
-    public CategoriesController(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public CategoriesController() {
     }
 
     /**
@@ -24,8 +24,11 @@ public class CategoriesController {
      * @return
      */
     public Set<Categoria> getCategories() {
+        entityManager = AppConfig.getEntityManager();
+
         List<Categoria> listaCategorias = this.entityManager.createQuery("SELECT c FROM Categoria c", Categoria.class).getResultList();
         HashSet<Categoria> categorias   = new HashSet<>(listaCategorias);
+
 
         return categorias;
     }
@@ -35,9 +38,12 @@ public class CategoriesController {
      * @return
      */
     public Categoria getCategory(int categoryId) throws CategoryNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Categoria categoria = entityManager.find(Categoria.class, categoryId);
 
         if(categoria == null) throw new CategoryNotFoundException();
+
 
         return categoria;
     }
@@ -49,6 +55,8 @@ public class CategoriesController {
      * @return
      */
     public Set<Categoria> getRecommendedCategories(String productName) {
+        entityManager = AppConfig.getEntityManager();
+
         List<Categoria> lista       = this.entityManager.createQuery("SELECT c FROM Categoria c", Categoria.class).getResultList();
         Set<Categoria> retorno      = new LinkedHashSet<>();
         Map<Categoria, Double> map  = new LinkedHashMap<>();
@@ -67,10 +75,13 @@ public class CategoriesController {
         /* Preenchendo lista com os valores do map */
         mapProcessado.forEach((k,v) -> retorno.add((Categoria) k));
 
+
         return retorno;
     }
 
     private Double getDistanciaNomesProdutos(String productName, Categoria categoria) {
+        entityManager = AppConfig.getEntityManager();
+
         Set<Produto> produtos = categoria.getProdutos();
         Double media          = produtos.size() > 0 ? 0d : 1d;
 
@@ -78,6 +89,7 @@ public class CategoriesController {
         for (Produto produto : produtos) {
             media += Levenshtein.stringsDistance(productName, produto.getNome()) / produtos.size();
         }
+
 
         return media;
     }
@@ -89,9 +101,12 @@ public class CategoriesController {
      * @throws CategoryNotFoundException
      */
     public Set<Produto> getProducts(int categoryId) throws CategoryNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Categoria categoria = entityManager.find(Categoria.class, categoryId);
 
         if (null == categoria) throw new CategoryNotFoundException();
+
 
         return categoria.getProdutos();
     }
@@ -103,13 +118,16 @@ public class CategoriesController {
      * @throws CategoryNameAlreadyInUseException
      */
     public Categoria addCategory(String nome) throws CategoryNameAlreadyInUseException {
+        entityManager = AppConfig.getEntityManager();
+
         if (this.categoryNameIsInUse(nome)) throw new CategoryNameAlreadyInUseException();
 
         Categoria categoria = new Categoria(nome);
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(categoria);
         entityManager.getTransaction().commit();
+
 
         return categoria;
     }
@@ -122,6 +140,8 @@ public class CategoriesController {
      * @throws CategoryNameAlreadyInUseException
      */
     Categoria addCategory(String nome, boolean canCommit) throws CategoryNameAlreadyInUseException {
+        entityManager = AppConfig.getEntityManager();
+
         if (this.categoryNameIsInUse(nome)) throw new CategoryNameAlreadyInUseException();
 
         Categoria categoria = new Categoria(nome);
@@ -129,6 +149,7 @@ public class CategoriesController {
         if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.persist(categoria);
         if (canCommit) entityManager.getTransaction().commit();
+
 
         return categoria;
     }
@@ -144,8 +165,10 @@ public class CategoriesController {
                     "SELECT c from Categoria c WHERE c.nome = :nome", Categoria.class
             ).setParameter("nome", nome).getSingleResult();
 
+
             return null != categoria;
         } catch (NoResultException e) {
+
             return false;
         }
     }
@@ -157,13 +180,16 @@ public class CategoriesController {
      * @throws CategoryNotFoundException
      */
     public Categoria updateCategory(int idCategoria, String nome) throws CategoryNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) throw new CategoryNotFoundException();
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         categoria.setNome(nome);
         entityManager.getTransaction().commit();
+
 
         return categoria;
     }
@@ -173,6 +199,8 @@ public class CategoriesController {
      * @param idCategoria
      */
     public void removeCategory(int idCategoria) throws CategoryNotFoundException {
+        entityManager = AppConfig.getEntityManager();
+
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) throw new CategoryNotFoundException();
@@ -182,15 +210,17 @@ public class CategoriesController {
         categoria.getProdutos().forEach(produto -> produtos.add(produto));
         categoria.setProdutos(new HashSet<>());
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         for (int i = produtos.size() - 1; i >= 0; i--) {
             entityManager.remove(produtos.get(i));
         }
         entityManager.getTransaction().commit();
 
-        entityManager.getTransaction().begin();
+        if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         entityManager.remove(categoria);
         entityManager.getTransaction().commit();
+
+
     }
 
 }

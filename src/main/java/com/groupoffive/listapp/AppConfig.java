@@ -21,7 +21,7 @@ public class AppConfig {
     }
 
     @Bean
-    public EntityManager getEntityManager() {
+    public static EntityManager getEntityManager() {
         return Persistence.createEntityManagerFactory("heroku_159f561881b902b").createEntityManager();
     }
 
@@ -56,26 +56,26 @@ public class AppConfig {
     }
 
     @Bean
-    ListsController listsController() { return new ListsController(this.getEntityManager(), this.firebaseNotificationService()); }
+    ListsController listsController() { return new ListsController(this.firebaseNotificationService()); }
 
     @Bean
     GroupsController groupsController() {
-        return new GroupsController(this.getEntityManager());
+        return new GroupsController();
     }
 
     @Bean
-    UsersController usersController() { return new UsersController(this.getEntityManager(), this.cryptSha256(), this.firebaseNotificationService()); }
+    UsersController usersController() { return new UsersController(this.cryptSha256(), this.firebaseNotificationService()); }
 
     @Bean
     CategoriesController categoriesController() {
-        return new CategoriesController(this.getEntityManager());
+        return new CategoriesController();
     }
 
     @Bean
-    ProductsController productsController() { return new ProductsController(this.getEntityManager(), this.amazonQueue()); }
+    ProductsController productsController() { return new ProductsController(this.amazonQueue()); }
 
     @Bean
-    FirebaseNotificationService firebaseNotificationService() { return new FirebaseNotificationService(this.getEntityManager()); }
+    FirebaseNotificationService firebaseNotificationService() { return new FirebaseNotificationService(); }
 
     @Bean
     AmazonQueue amazonQueue() { return new AmazonQueue(); }
