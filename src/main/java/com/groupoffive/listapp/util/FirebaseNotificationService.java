@@ -27,7 +27,6 @@ public class FirebaseNotificationService implements NotificationService {
     @Override
     public void persistToken(Usuario usuario, String firebaseToken) {
         entityManager = AppConfig.getEntityManager();
-        entityManager = AppConfig.getEntityManager();
         Dispositivo dispositivo = new Dispositivo(firebaseToken, usuario);
 
         if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
@@ -41,6 +40,7 @@ public class FirebaseNotificationService implements NotificationService {
 
     @Override
     public void notifyUser(Usuario usuario, String titulo, String mensagem) throws UnableToNotifyUserException {
+        entityManager = AppConfig.getEntityManager();
         List<Dispositivo> dispositivos = this.getConnectedDevicesFromUser(usuario.getId());
 
         for (Dispositivo dispositivo : dispositivos) {
