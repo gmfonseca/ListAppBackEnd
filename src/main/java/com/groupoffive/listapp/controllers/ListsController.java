@@ -26,7 +26,7 @@ public class ListsController {
         GrupoDeUsuarios grupo = entityManager.find(GrupoDeUsuarios.class, groupId);
 
         if (null == grupo) {
-            entityManager.close();
+
             throw new GroupNotFoundException();
         }
         ListaDeCompras lista = new ListaDeCompras(listName, grupo);
@@ -52,11 +52,11 @@ public class ListsController {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
 
-        entityManager.close();
+
         return lista.getProdutos();
     }
 
@@ -70,13 +70,13 @@ public class ListsController {
         entityManager = AppConfig.getEntityManager();
 
         if(null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
 
         List<Object> comentarios = Collections.singletonList(lista.getComentarios());
 
-        entityManager.close();
+
         return comentarios;
     }
     public List<Object> getComments(int listId) throws ListNotFoundException {
@@ -84,7 +84,7 @@ public class ListsController {
 
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
-        entityManager.close();
+
         return getComments(lista);
     }
 
@@ -102,7 +102,7 @@ public class ListsController {
         ListaDeCompras lista  = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
 
@@ -121,7 +121,7 @@ public class ListsController {
             categorias.add(categoria);
         }
 
-        entityManager.close();
+
         return categorias;
     }
 
@@ -132,15 +132,15 @@ public class ListsController {
         Produto produto = entityManager.find(Produto.class, productId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
         if (null == produto) {
-            entityManager.close();
+
             throw new ProductNotFoundException();
         }
         if (lista.getProdutos().contains(produto)) {
-            entityManager.close();
+
             throw new ProductAlreadyInListException();
         }
 
@@ -150,7 +150,7 @@ public class ListsController {
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return lista;
     }
 
@@ -161,15 +161,15 @@ public class ListsController {
         Produto produto = entityManager.find(Produto.class, productId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
         if(null == produto) {
-            entityManager.close();
+
             throw new ProductNotFoundException();
         }
         if(!lista.getProdutos().contains(produto)) {
-            entityManager.close();
+
             throw new ProductDoesNotInListException();
         }
 
@@ -179,7 +179,7 @@ public class ListsController {
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return lista;
     }
 
@@ -201,19 +201,19 @@ public class ListsController {
         Usuario user = entityManager.find(Usuario.class, userId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
         if (null == user) {
-            entityManager.close();
+
             throw new UserNotFoundException();
         }
         if (fieldIsEmpty(comment)) {
-            entityManager.close();
+
             throw new EmptyCommentException();
         }
         if (!lista.getGrupoDeUsuarios().containsUser(user)) {
-            entityManager.close();
+
             throw new UserNotInGroupException();
         }
 
@@ -241,7 +241,7 @@ public class ListsController {
             }
         }
 
-        entityManager.close();
+
         return getComments(lista);
     }
 
@@ -258,7 +258,7 @@ public class ListsController {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         if (null == lista) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
 
@@ -268,7 +268,7 @@ public class ListsController {
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return lista;
     }
 
@@ -288,15 +288,15 @@ public class ListsController {
         Comentario comment = entityManager.find(Comentario.class, commentId);
 
         if(list == null) {
-            entityManager.close();
+
             throw new ListNotFoundException();
         }
         if(user == null) {
-            entityManager.close();
+
             throw new UserNotFoundException();
         }
         if(comment == null) {
-            entityManager.close();
+
             throw new CommentNotFoundException();
         }
         if(!list.getGrupoDeUsuarios().containsUser(user)) throw new UserNotInGroupException();
@@ -314,7 +314,7 @@ public class ListsController {
         entityManager.remove(comment);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return getComments(list);
     }
 
@@ -340,7 +340,7 @@ public class ListsController {
         entityManager.remove(lista);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
     }
 
     /**

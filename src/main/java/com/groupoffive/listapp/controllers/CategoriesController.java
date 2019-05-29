@@ -29,7 +29,7 @@ public class CategoriesController {
         List<Categoria> listaCategorias = this.entityManager.createQuery("SELECT c FROM Categoria c", Categoria.class).getResultList();
         HashSet<Categoria> categorias   = new HashSet<>(listaCategorias);
 
-        entityManager.close();
+
         return categorias;
     }
 
@@ -43,11 +43,11 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, categoryId);
 
         if(categoria == null) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
-        entityManager.close();
+
         return categoria;
     }
 
@@ -78,7 +78,7 @@ public class CategoriesController {
         /* Preenchendo lista com os valores do map */
         mapProcessado.forEach((k,v) -> retorno.add((Categoria) k));
 
-        entityManager.close();
+
         return retorno;
     }
 
@@ -108,11 +108,11 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, categoryId);
 
         if (null == categoria) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
-        entityManager.close();
+
         return categoria.getProdutos();
     }
 
@@ -126,7 +126,7 @@ public class CategoriesController {
         entityManager = AppConfig.getEntityManager();
 
         if (this.categoryNameIsInUse(nome)) {
-            entityManager.close();
+
             throw new CategoryNameAlreadyInUseException();
         }
 
@@ -136,7 +136,7 @@ public class CategoriesController {
         entityManager.persist(categoria);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return categoria;
     }
 
@@ -151,7 +151,7 @@ public class CategoriesController {
         entityManager = AppConfig.getEntityManager();
 
         if (this.categoryNameIsInUse(nome)) {
-            entityManager.close();
+
             throw new CategoryNameAlreadyInUseException();
         }
 
@@ -161,7 +161,7 @@ public class CategoriesController {
         entityManager.persist(categoria);
         if (canCommit) entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return categoria;
     }
 
@@ -176,7 +176,7 @@ public class CategoriesController {
                     "SELECT c from Categoria c WHERE c.nome = :nome", Categoria.class
             ).setParameter("nome", nome).getSingleResult();
 
-            entityManager.close();
+
             return null != categoria;
         } catch (NoResultException e) {
 
@@ -196,7 +196,7 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
@@ -204,7 +204,7 @@ public class CategoriesController {
         categoria.setNome(nome);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
         return categoria;
     }
 
@@ -218,7 +218,7 @@ public class CategoriesController {
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == categoria) {
-            entityManager.close();
+
             throw new CategoryNotFoundException();
         }
 
@@ -237,7 +237,7 @@ public class CategoriesController {
         entityManager.remove(categoria);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+
     }
 
 }
