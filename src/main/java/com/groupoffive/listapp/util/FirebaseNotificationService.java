@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FirebaseNotificationService implements NotificationService {
 
-    private EntityManager entityManager = AppConfig.getEntityManager();
+    private EntityManager entityManager;
     private String key = "AAAA_5fn3M0:APA91bF51hwwFI8iIyBOvvAG6ipwt2tDDElxtmK0H5tP8HY_KY7ys6SCV7ff0XUnl4GT40nV-8BNI4JREuYptx-XGcbzbz9sa1wLTdyUnZtBBfu3Xx3tkrLp-PzQEiC_BKMYQefuixBW";
 
     public FirebaseNotificationService() {
@@ -26,6 +26,8 @@ public class FirebaseNotificationService implements NotificationService {
 
     @Override
     public void persistToken(Usuario usuario, String firebaseToken) {
+        entityManager = AppConfig.getEntityManager();
+        entityManager = AppConfig.getEntityManager();
         Dispositivo dispositivo = new Dispositivo(firebaseToken, usuario);
 
         if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
