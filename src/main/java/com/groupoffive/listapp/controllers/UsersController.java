@@ -26,34 +26,20 @@ public class UsersController {
         this.notificationService = notificationService;
     }
 
-    private Set<GrupoDeUsuarios> getGroupsFromUser(Usuario usuario) throws UserNotFoundException {
+    public Set<GrupoDeUsuarios> getGroupsFromUser(int usuario) throws UserNotFoundException {
         entityManager = AppConfig.getEntityManager();
 
-        if (null == usuario) {
+        Usuario user = entityManager.find(Usuario.class, usuario);
 
+        if (null == user) {
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
-        usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
+        user.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
-        entityManager.close();
         return grupos;
-    }
-
-    /**
-     * Retorna os grupos aos quais um usuário está associado.
-     * @param userId
-     * @return
-     * @throws UserNotFoundException caso o usuario solicitado nao esteja cadastrado ou nao esteja em algum grupo
-     */
-    public Set<GrupoDeUsuarios> getGroupsFromUser(int userId) throws UserNotFoundException {
-        entityManager = AppConfig.getEntityManager();
-
-        Usuario usuario = entityManager.find(Usuario.class, userId);
-
-        entityManager.close();
-        return getGroupsFromUser(usuario);
     }
 
     /**
