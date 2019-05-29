@@ -29,6 +29,7 @@ public class ProductsController {
 
         List<Produto> products = entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
 
+        entityManager.close();
         return products;
     }
 
@@ -51,7 +52,7 @@ public class ProductsController {
         /* Preenchendo lista com os valores do map */
         mapProcessado.forEach((k,v) -> retorno.add((Produto) k));
 
-
+        entityManager.close();
         return retorno;
     }
 
@@ -66,12 +67,15 @@ public class ProductsController {
         entityManager = AppConfig.getEntityManager();
 
         if (this.productNameIsInUse(nome)) {
-
+            entityManager.close();
             throw new ProductNameAlreadyInUseException();
         }
 
         Categoria categoria = this.entityManager.find(Categoria.class, idCategoria);
-        if (null == categoria) throw new CategoryNotFoundException();
+        if (null == categoria) {
+            entityManager.close();
+            throw new CategoryNotFoundException();
+        }
 
         Produto produto = new Produto(nome, preco, categoria);
 
@@ -80,8 +84,7 @@ public class ProductsController {
                 AmazonQueue.QUEUE_PRODUCT_ANALYSE
         );
 
-
-
+        entityManager.close();
         return produto;
     }
 
@@ -91,21 +94,20 @@ public class ProductsController {
         Categoria categoria = this.entityManager.find(Categoria.class, idCategoria);
         Produto produto = new Produto(nome, preco, categoria);
 
-
         try {
             Usuario usuario = this.entityManager.find(Usuario.class, idUsuario);
             new FirebaseNotificationService().notifyUser(usuario, "Notícia sobre seu produto", "Seu produto " + nome + " foi aprovado e adicionado no banco de dados.");
         } catch (Exception e) {
+            entityManager.close();
             System.out.println(e.getMessage());
         }
-
 
         if (!entityManager.getTransaction().isActive()) entityManager.getTransaction().begin();
         categoria.getProdutos().add(produto);
         entityManager.persist(produto);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
     }
 
     /**
@@ -131,9 +133,9 @@ public class ProductsController {
             return this.addProduct(nome, preco, categoria.getId(), idUsuario);
         } catch (CategoryNotFoundException e) {
             // Tenho muita fé de que isso não vai acontecer
-
-
             return null;
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -151,6 +153,8 @@ public class ProductsController {
             return null != produto;
         } catch (NoResultException e) {
             return false;
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -171,11 +175,11 @@ public class ProductsController {
         Categoria categoria = entityManager.find(Categoria.class, idCategoria);
 
         if (null == produto) {
-
+            entityManager.close();
             throw new ProductNotFoundException();
         }
         if (null == categoria) {
-
+            entityManager.close();
             throw new CategoryNotFoundException();
         }
 
@@ -185,7 +189,7 @@ public class ProductsController {
         produto.setCategoria(categoria);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return produto;
     }
 
@@ -203,13 +207,12 @@ public class ProductsController {
 
         try {
             Categoria categoria = AppConfig.getContext().getBean("categoriesController", CategoriesController.class).addCategory(nomeCategoria, false);
-
             return this.updateProduct(idProduto, nome, preco, categoria.getId());
         } catch (CategoryNotFoundException e) {
             // Tenho muita fé de que isso não vai acontecer
-
-
             return null;
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -218,13 +221,13 @@ public class ProductsController {
 
         Produto produto      = entityManager.find(Produto.class, idProduto);
         if (null == produto) {
-
+            entityManager.close();
             throw new ProductNotFoundException();
         }
 
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, idLista);
         if (null == lista) {
-
+            entityManager.close();
             throw new ListNotFoundException();
         }
 
@@ -234,7 +237,7 @@ public class ProductsController {
         entityManager.persist(lista);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
     }
 
 
@@ -249,7 +252,7 @@ public class ProductsController {
         Produto produto = entityManager.find(Produto.class, idProduto);
 
         if (null == produto) {
-
+            entityManager.close();
             throw new ProductNotFoundException();
         }
 
@@ -257,6 +260,6 @@ public class ProductsController {
         entityManager.remove(produto);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
     }
 }

@@ -32,14 +32,14 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if (null == usuario) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
-
+        entityManager.close();
         return grupos;
     }
 
@@ -48,7 +48,7 @@ public class GroupsController {
 
         Usuario usuario = entityManager.find(Usuario.class, userId);
 
-
+        entityManager.close();
         return getGroupsFromUser(usuario);
     }
 
@@ -64,7 +64,7 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(null == group) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
 
@@ -74,14 +74,12 @@ public class GroupsController {
             users.add(user_group.getUsuario());
         });
 
-
         return users;
     }
     public Set<Usuario> getUsersFromGroup(int groupId) throws GroupNotFoundException {
         entityManager = AppConfig.getEntityManager();
 
         GrupoDeUsuarios grupo = entityManager.find(GrupoDeUsuarios.class, groupId);
-
 
         return getUsersFromGroup(grupo);
     }
@@ -100,11 +98,11 @@ public class GroupsController {
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
 
         if(group == null) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
 
-
+        entityManager.close();
         return group;
     }
 
@@ -122,7 +120,7 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(criador == null) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
@@ -134,22 +132,22 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return group;
     }
+
     public GrupoDeUsuarios createGroup(String nome, int creator_id) throws UserNotFoundException {
         entityManager = AppConfig.getEntityManager();
 
         Usuario criador = entityManager.find(Usuario.class, creator_id);
 
-
         return createGroup(nome, criador);
     }
+
     public GrupoDeUsuarios createGroup(String nome, String creator_name) throws UserNotFoundException {
         entityManager = AppConfig.getEntityManager();
 
         Usuario criador = getUserByName(creator_name);
-
 
         return createGroup(nome, criador);
     }
@@ -170,16 +168,16 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
         if(getUsersFromGroup(group).contains(user)) {
-
+            entityManager.close();
             throw new UserAlreadyInGroupException();
         }
 
@@ -196,15 +194,15 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return group;
     }
+
     public GrupoDeUsuarios addUserToGroup(int user_id, int group_id) throws GroupNotFoundException, UserNotFoundException, UserAlreadyInGroupException {
         entityManager = AppConfig.getEntityManager();
 
         Usuario user = entityManager.find(Usuario.class, user_id);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
-
 
         return addUserToGroup(user, group);
     }
@@ -214,7 +212,6 @@ public class GroupsController {
 
         Usuario user = getUserByEmail(email);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
-
 
         return addUserToGroup(user, group);
     }
@@ -235,18 +232,18 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<Usuario> users = getUsersFromGroup(group);
 
         if(!users.contains(user)) {
-
+            entityManager.close();
             throw new UserNotInGroupException();
         }
 
@@ -293,7 +290,7 @@ public class GroupsController {
 
         }
 
-
+        entityManager.close();
         return group;
     }
 
@@ -303,7 +300,6 @@ public class GroupsController {
         Usuario user = entityManager.find(Usuario.class, user_id);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
 
-
         return removeUserFromGroup(user, group);
     }
 
@@ -312,7 +308,6 @@ public class GroupsController {
 
         Usuario user = getUserByName(user_name);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, group_id);
-
 
         return removeUserFromGroup(user, group);
     }
@@ -338,31 +333,31 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
         if(!group.containsUser(user)) {
-
+            entityManager.close();
             throw new UserNotInGroupException();
         }
         if(group.getCriador().equals(user)) {
-
+            entityManager.close();
             throw new UserGroupCreatorException();
         }
 
         UsuarioGrupo ug = entityManager.find(UsuarioGrupo.class, new UsuarioGrupoPK(user, group));
 
         if(ug.isAdmin() && admin) {
-
+            entityManager.close();
             throw new UserAlreadyGroupAdminException();
         }
         if(!ug.isAdmin() && !admin) {
-
+            entityManager.close();
             throw new UserWasNotGroupAdminException();
         }
 
@@ -379,7 +374,7 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return group;
     }
     public GrupoDeUsuarios toggleUserGroupAdmin(int userId, int groupId, boolean admin)
@@ -390,7 +385,6 @@ public class GroupsController {
         Usuario user = entityManager.find(Usuario.class, userId);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
 
-
         return toggleUserGroupAdmin(user, group, admin);
     }
     public GrupoDeUsuarios toggleUserGroupAdmin(String userName, int groupId, boolean admin)
@@ -400,7 +394,6 @@ public class GroupsController {
 
         Usuario user = getUserByName(userName);
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
-
 
         return toggleUserGroupAdmin(user, group, admin);
     }
@@ -418,15 +411,18 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if (group == null) {
-
+            entityManager.close();
             throw new GroupNotFoundException();
         }
         if (eraserUser == null) {
-
+            entityManager.close();
             throw new UserNotFoundException();
         }
 
-        if(!group.getCriador().equals(eraserUser)) throw new NotGroupOwnerException();
+        if(!group.getCriador().equals(eraserUser)) {
+            entityManager.close();
+            throw new NotGroupOwnerException();
+        }
 
         try {
 
@@ -462,7 +458,7 @@ public class GroupsController {
 
         }
 
-
+        entityManager.close();
         return group;
     }
     public GrupoDeUsuarios deleteGroup(int groupId, int eraserUserId) throws GroupNotFoundException, UserNotFoundException, NotGroupOwnerException {
@@ -470,7 +466,6 @@ public class GroupsController {
 
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
         Usuario eraserUser = entityManager.find(Usuario.class, eraserUserId);
-
 
         return deleteGroup(group, eraserUser);
     }
@@ -483,12 +478,8 @@ public class GroupsController {
      */
     private Usuario getUserByName(String nome){
         try{
-
-
             return entityManager.createQuery("SELECT u from Usuario u WHERE u.nome = :nome", Usuario.class).setParameter("nome", nome).getSingleResult();
-
         }catch(NoResultException e){
-
             return null;
         }
     }
@@ -501,12 +492,8 @@ public class GroupsController {
      */
     private Usuario getUserByEmail(String email){
         try{
-
-
             return entityManager.createQuery("SELECT u from Usuario u WHERE u.email = :email", Usuario.class).setParameter("email", email).getSingleResult();
-
         }catch(NoResultException e){
-
             return null;
         }
     }

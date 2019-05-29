@@ -37,8 +37,7 @@ public class UsersController {
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
-
-
+        entityManager.close();
         return grupos;
     }
 
@@ -53,8 +52,7 @@ public class UsersController {
 
         Usuario usuario = entityManager.find(Usuario.class, userId);
 
-
-
+        entityManager.close();
         return getGroupsFromUser(usuario);
     }
 
@@ -79,13 +77,11 @@ public class UsersController {
 
             if (FCMToken != null) this.notificationService.persistToken(usuario, FCMToken);
 
-
-
             return usuario;
         } catch (NoResultException e) {
-
-
             throw new IncorrectEmailOrPasswordException();
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -102,9 +98,12 @@ public class UsersController {
     public Usuario addUser(String nome, String email, String senha) throws NotFilledRequiredFieldsException, EmailAlreadyInUseException {
         entityManager = AppConfig.getEntityManager();
 
-        if(fieldIsEmpty(nome) || fieldIsEmpty(email) || fieldIsEmpty(senha)) throw new NotFilledRequiredFieldsException();
+        if(fieldIsEmpty(nome) || fieldIsEmpty(email) || fieldIsEmpty(senha)) {
+            entityManager.close();
+            throw new NotFilledRequiredFieldsException();
+        }
         if(this.emailIsInUse(email)) {
-
+            entityManager.close();
             throw new EmailAlreadyInUseException();
         }
 
@@ -116,7 +115,7 @@ public class UsersController {
         entityManager.persist(usuario);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return usuario;
     }
 
@@ -127,9 +126,7 @@ public class UsersController {
      * @return
      */
     private boolean fieldIsEmpty(String field_data){
-
         return (field_data == null || field_data.equals("") || field_data.equals("\"\""));
-
     }
 
     /**
@@ -147,6 +144,8 @@ public class UsersController {
             return null != usuario;
         } catch (NoResultException e) {
             return false;
+        } finally {
+            entityManager.close();
         }
     }
 
