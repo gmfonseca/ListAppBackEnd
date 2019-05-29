@@ -29,12 +29,16 @@ public class UsersController {
     private Set<GrupoDeUsuarios> getGroupsFromUser(Usuario usuario) throws UserNotFoundException {
         entityManager = AppConfig.getEntityManager();
 
-        if (null == usuario) throw new UserNotFoundException();
+        if (null == usuario) {
+            entityManager.close();
+            throw new UserNotFoundException();
+        }
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
 
+        entityManager.close();
         return grupos;
     }
 
@@ -50,6 +54,7 @@ public class UsersController {
         Usuario usuario = entityManager.find(Usuario.class, userId);
 
 
+        entityManager.close();
         return getGroupsFromUser(usuario);
     }
 
@@ -75,9 +80,11 @@ public class UsersController {
             if (FCMToken != null) this.notificationService.persistToken(usuario, FCMToken);
 
 
+            entityManager.close();
             return usuario;
         } catch (NoResultException e) {
 
+            entityManager.close();
             throw new IncorrectEmailOrPasswordException();
         }
     }
@@ -96,7 +103,10 @@ public class UsersController {
         entityManager = AppConfig.getEntityManager();
 
         if(fieldIsEmpty(nome) || fieldIsEmpty(email) || fieldIsEmpty(senha)) throw new NotFilledRequiredFieldsException();
-        if(this.emailIsInUse(email)) throw new EmailAlreadyInUseException();
+        if(this.emailIsInUse(email)) {
+            entityManager.close();
+            throw new EmailAlreadyInUseException();
+        }
 
         String cryptedPass = crypt.cryptString(senha);
 
@@ -106,7 +116,7 @@ public class UsersController {
         entityManager.persist(usuario);
         entityManager.getTransaction().commit();
 
-
+        entityManager.close();
         return usuario;
     }
 
