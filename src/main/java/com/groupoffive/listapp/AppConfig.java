@@ -20,9 +20,8 @@ public class AppConfig {
         return new AnnotationConfigApplicationContext(AppConfig.class);
     }
 
-    @Bean
     public static EntityManager getEntityManager() {
-        return Persistence.createEntityManagerFactory("heroku_159f561881b902b").createEntityManager();
+        return Persistence.createEntityManagerFactory("mydb").createEntityManager();
     }
 
     @Bean
