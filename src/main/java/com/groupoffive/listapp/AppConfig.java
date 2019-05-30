@@ -21,7 +21,7 @@ public class AppConfig {
     }
 
     public static EntityManager getEntityManager() {
-        return Persistence.createEntityManagerFactory("heroku_159f561881b902b").createEntityManager();
+        return Persistence.createEntityManagerFactory("sql10293851").createEntityManager();
     }
 
     @Bean
