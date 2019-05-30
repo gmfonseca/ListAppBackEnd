@@ -32,14 +32,14 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if (null == usuario) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
-        entityManager.close();
+        //entityManager.close();
         return grupos;
     }
 
@@ -48,7 +48,7 @@ public class GroupsController {
 
         Usuario usuario = entityManager.find(Usuario.class, userId);
 
-        entityManager.close();
+        //entityManager.close();
         return getGroupsFromUser(usuario);
     }
 
@@ -64,7 +64,7 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(null == group) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
 
@@ -98,11 +98,11 @@ public class GroupsController {
         GrupoDeUsuarios group = entityManager.find(GrupoDeUsuarios.class, groupId);
 
         if(group == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
 
@@ -120,7 +120,7 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(criador == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
@@ -132,7 +132,7 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
 
@@ -168,16 +168,16 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         if(getUsersFromGroup(group).contains(user)) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserAlreadyInGroupException();
         }
 
@@ -194,7 +194,7 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
 
@@ -232,18 +232,18 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<Usuario> users = getUsersFromGroup(group);
 
         if(!users.contains(user)) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotInGroupException();
         }
 
@@ -290,7 +290,7 @@ public class GroupsController {
 
         }
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
 
@@ -333,31 +333,31 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if(group == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
         if(user == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         if(!group.containsUser(user)) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotInGroupException();
         }
         if(group.getCriador().equals(user)) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserGroupCreatorException();
         }
 
         UsuarioGrupo ug = entityManager.find(UsuarioGrupo.class, new UsuarioGrupoPK(user, group));
 
         if(ug.isAdmin() && admin) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserAlreadyGroupAdminException();
         }
         if(!ug.isAdmin() && !admin) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserWasNotGroupAdminException();
         }
 
@@ -374,7 +374,7 @@ public class GroupsController {
         entityManager.persist(ug);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
     public GrupoDeUsuarios toggleUserGroupAdmin(int userId, int groupId, boolean admin)
@@ -411,16 +411,16 @@ public class GroupsController {
         entityManager = AppConfig.getEntityManager();
 
         if (group == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new GroupNotFoundException();
         }
         if (eraserUser == null) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         if(!group.getCriador().equals(eraserUser)) {
-            entityManager.close();
+            //entityManager.close();
             throw new NotGroupOwnerException();
         }
 
@@ -458,7 +458,7 @@ public class GroupsController {
 
         }
 
-        entityManager.close();
+        //entityManager.close();
         return group;
     }
     public GrupoDeUsuarios deleteGroup(int groupId, int eraserUserId) throws GroupNotFoundException, UserNotFoundException, NotGroupOwnerException {

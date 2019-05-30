@@ -30,14 +30,14 @@ public class UsersController {
         entityManager = AppConfig.getEntityManager();
 
         if (null == usuario) {
-            entityManager.close();
+            //entityManager.close();
             throw new UserNotFoundException();
         }
 
         Set<GrupoDeUsuarios> grupos = new HashSet<>();
         usuario.getGrupos().forEach(user_group -> grupos.add(user_group.getGrupo()));
 
-        entityManager.close();
+        //entityManager.close();
         return grupos;
     }
 
@@ -52,7 +52,7 @@ public class UsersController {
 
         Usuario usuario = entityManager.find(Usuario.class, userId);
 
-        entityManager.close();
+        //entityManager.close();
         return getGroupsFromUser(usuario);
     }
 
@@ -81,7 +81,7 @@ public class UsersController {
         } catch (NoResultException e) {
             throw new IncorrectEmailOrPasswordException();
         } finally {
-            entityManager.close();
+            //entityManager.close();
         }
     }
 
@@ -99,11 +99,11 @@ public class UsersController {
         entityManager = AppConfig.getEntityManager();
 
         if(fieldIsEmpty(nome) || fieldIsEmpty(email) || fieldIsEmpty(senha)) {
-            entityManager.close();
+            //entityManager.close();
             throw new NotFilledRequiredFieldsException();
         }
         if(this.emailIsInUse(email)) {
-            entityManager.close();
+            //entityManager.close();
             throw new EmailAlreadyInUseException();
         }
 
@@ -115,7 +115,7 @@ public class UsersController {
         entityManager.persist(usuario);
         entityManager.getTransaction().commit();
 
-        entityManager.close();
+        //entityManager.close();
         return usuario;
     }
 
@@ -145,7 +145,7 @@ public class UsersController {
         } catch (NoResultException e) {
             return false;
         } finally {
-            entityManager.close();
+            //entityManager.close();
         }
     }
 
