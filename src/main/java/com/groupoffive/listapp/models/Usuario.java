@@ -26,7 +26,7 @@ public class Usuario {
     @NotNull
     private String senha;
 
-    @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.EAGER)
     private Set<UsuarioGrupo> grupos = new HashSet<>();
 
     @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
