@@ -24,7 +24,7 @@ public class ListaDeCompras {
     @OneToMany(mappedBy = "id.list", fetch = FetchType.LAZY)
     private Set<ComentarioLista> comentarios = new TreeSet<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "produto_lista",
             joinColumns = { @JoinColumn(name = "lista_de_compras_id") },
