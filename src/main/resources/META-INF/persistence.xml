@@ -12,7 +12,7 @@
         <properties>
             <!-- dados da conexao -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://0.tcp.ngrok.io:12913/mydb?reconnect=true;useTimezone=true;serverTimezone=UTC" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://0.tcp.ngrok.io:12913/mydb?reconnect=true&amp;useTimezone=true&amp;serverTimezone=UTC" />
             <property name="javax.persistence.jdbc.user" value="admin" />
             <property name="javax.persistence.jdbc.password" value="materialize" />
 
