@@ -12,7 +12,7 @@ public class UsuarioGrupoPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="grupo_de_usuarios_id", insertable = false, updatable = false)
     private GrupoDeUsuarios group;
 

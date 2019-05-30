@@ -13,7 +13,7 @@ public class Produto /*implements Comparable<Produto>*/ {
     private int id;
     private String nome;
     private double preco;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="categoria_id")
     private Categoria categoria;
 

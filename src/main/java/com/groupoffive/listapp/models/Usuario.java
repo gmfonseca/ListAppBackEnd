@@ -26,10 +26,10 @@ public class Usuario {
     @NotNull
     private String senha;
 
-    @OneToMany(mappedBy = "id.user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
     private Set<UsuarioGrupo> grupos = new HashSet<>();
 
-    @OneToMany(mappedBy = "id.user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "id.user", fetch = FetchType.LAZY)
     private Set<ComentarioLista> comentarios = new HashSet<>();
 
     public Usuario() {}

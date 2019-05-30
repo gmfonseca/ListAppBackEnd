@@ -13,7 +13,7 @@ public class ComentarioListaPK implements Serializable {
     @JoinColumn(name="comentario_id", insertable = false, updatable = false)
     private Comentario comment;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lista_compra_id", insertable = false, updatable = false)
     private ListaDeCompras list;
 
