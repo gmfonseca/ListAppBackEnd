@@ -21,7 +21,7 @@ public class AppConfig {
     }
 
     public static EntityManager getEntityManager() {
-        return Persistence.createEntityManagerFactory("sql10293851").createEntityManager();
+        return Persistence.createEntityManagerFactory("mydb").createEntityManager();
     }
 
     @Bean
