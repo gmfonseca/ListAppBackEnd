@@ -67,7 +67,7 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.GET)
     @ResponseBody
-    public List<Object> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
+    public List<ComentarioLista> getComments(@PathVariable("id") int listId) throws ListNotFoundException {
         return listsController.getComments(listId);
     }
 
@@ -85,7 +85,7 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments", method = RequestMethod.PUT)
     @ResponseBody
-    public List<Object> addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+    public List<ComentarioLista> addComment(@PathVariable("id") int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
         return listsController.addComment(listId, userId, comment);
     }
 
@@ -135,7 +135,7 @@ public class ListsRouter {
      */
     @RequestMapping(value = "/{id}/comments/{commentId}", method = RequestMethod.DELETE)
     @ResponseBody
-    public List<Object> deleteComment(@PathVariable("id") int listId, int userId, @PathVariable("commentId") int commentId)throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException {
+    public List<ComentarioLista> deleteComment(@PathVariable("id") int listId, int userId, @PathVariable("commentId") int commentId)throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException {
         return listsController.deleteComment(listId, userId, commentId);
     }
 

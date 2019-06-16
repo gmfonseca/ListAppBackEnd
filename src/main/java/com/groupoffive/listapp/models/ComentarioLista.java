@@ -48,6 +48,11 @@ public class ComentarioLista {
         return id.getComment();
     }
 
+    @JsonIgnore
+    public int getCommentID() {
+        return id.getComment().getId();
+    }
+
     public void setComment(Comentario comment) {
         id.setComment(comment);
     }

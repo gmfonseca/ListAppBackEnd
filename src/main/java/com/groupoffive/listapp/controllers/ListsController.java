@@ -51,16 +51,17 @@ public class ListsController {
      * @return comentarios da lista
      * @throws ListNotFoundException caso lista com este id não seja encontrada
      */
-    private List<Object> getComments(ListaDeCompras lista) throws ListNotFoundException {
+    private List<ComentarioLista> getComments(ListaDeCompras lista) throws ListNotFoundException {
 
         if(null == lista) throw new ListNotFoundException();
 
-        List<Object> comentarios = Arrays.asList(lista.getComentarios().toArray());
-        comentarios.sort((c1, c2) -> ((ComentarioLista)c1).getComment().getId() - ((ComentarioLista)c2).getComment().getId());
+        List<ComentarioLista> comentarios = new ArrayList<>(lista.getComentarios());
+        comentarios.sort(Comparator.comparing(ComentarioLista::getCommentID));
 
         return comentarios;
     }
-    public List<Object> getComments(int listId) throws ListNotFoundException {
+
+    public List<ComentarioLista> getComments(int listId) throws ListNotFoundException {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
 
         return getComments(lista);
@@ -142,7 +143,7 @@ public class ListsController {
      * @throws EmptyCommentException caso o comentario esteja vazio
      * @throws UserNotInGroupException caso o usuario nao esteja inserido no respectivo grupo
      */
-    public List<Object> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
+    public List<ComentarioLista> addComment(int listId, int userId, String comment)throws ListNotFoundException, UserNotFoundException, EmptyCommentException, UserNotInGroupException {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Usuario user = entityManager.find(Usuario.class, userId);
 
@@ -206,7 +207,7 @@ public class ListsController {
      * @param commentId id do comentario a ser removido
      * @throws ListNotFoundException Exceção lançada caso lista com este id não seja encontrada
      */
-    public List<Object> deleteComment(int listId, int userId, int commentId)
+    public List<ComentarioLista> deleteComment(int listId, int userId, int commentId)
             throws ListNotFoundException, UserNotFoundException, CommentNotFoundException, UserNotInGroupException, NotUserCommentException{
         ListaDeCompras list = entityManager.find(ListaDeCompras.class, listId);
         Usuario user = entityManager.find(Usuario.class, userId);
