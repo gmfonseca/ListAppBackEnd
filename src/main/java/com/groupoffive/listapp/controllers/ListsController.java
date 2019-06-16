@@ -131,14 +131,7 @@ public class ListsController {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Produto produto = entityManager.find(Produto.class, productId);
 
-        if (null == lista) {
-            //entityManager.close();
-            throw new ListNotFoundException();
-        }
-        if (null == produto) {
-            //entityManager.close();
-            throw new ProductNotFoundException();
-        }
+        checkListProduct(lista, produto);
         if (lista.getProdutos().contains(produto)) {
             //entityManager.close();
             throw new ProductAlreadyInListException();
@@ -160,14 +153,8 @@ public class ListsController {
         ListaDeCompras lista = entityManager.find(ListaDeCompras.class, listId);
         Produto produto = entityManager.find(Produto.class, productId);
 
-        if (null == lista) {
-            //entityManager.close();
-            throw new ListNotFoundException();
-        }
-        if(null == produto) {
-            //entityManager.close();
-            throw new ProductNotFoundException();
-        }
+        checkListProduct(lista, produto);
+
         if(!lista.getProdutos().contains(produto)) {
             //entityManager.close();
             throw new ProductDoesNotInListException();
@@ -181,6 +168,17 @@ public class ListsController {
 
         //entityManager.close();
         return lista;
+    }
+
+    private void checkListProduct(ListaDeCompras lista, Produto produto) throws ListNotFoundException, ProductNotFoundException {
+        if (null == lista) {
+            //entityManager.close();
+            throw new ListNotFoundException();
+        }
+        if(null == produto) {
+            //entityManager.close();
+            throw new ProductNotFoundException();
+        }
     }
 
     /**
